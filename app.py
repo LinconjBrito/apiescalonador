@@ -54,7 +54,10 @@ def calc_turnaround_sjf():
             turn_total += processo['Turnaround']
         
         turn_medio = turn_total / len(lista_processos)
-        return jsonify(turn_medio) 
+        response = {
+             "turnaround" : turn_medio
+        }
+        return jsonify(response) 
 
 
 

@@ -26,8 +26,8 @@ def calc_turnaround_fifo():
 
 
 @app.route('/sjf/submit', methods=['POST'])
-def calc_turnaround_sjf(dicionario):
-        lista_processos = dicionario
+def calc_turnaround_sjf():
+        lista_processos = request.json
         tempo_atual = turn_total = 0
         processos_restantes = sorted(lista_processos, key=lambda dicionario: (dicionario['T_chegada'], dicionario['T_exec']))
         

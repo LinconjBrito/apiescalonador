@@ -87,8 +87,13 @@ def edf():
         if "sobrecarga" in v:
             sobrecarga = v['sobrecarga']
 
+<<<<<<< HEAD
     global tempo_edf
     tempo_edf = int(min(lista_tempo_chegada))
+=======
+    global tempo
+    tempo = int(min(lista_tempo_chegada))
+>>>>>>> 5c712519846852f2d94b7a1b890e34f27dd727c5
     turnaround = 0
     tempo_cpu = [0]*qtd_processos  
     lista_processamento = [0]*qtd_processos  
@@ -106,19 +111,32 @@ def edf():
             if lista_processamento[x] == 1 and lista_deadlines[x] < deadline_proxima and tempo_cpu[x] < lista_tempo_execucao[x]:
                 deadline_proxima = lista_deadlines[x]
                 escolhido = x
+<<<<<<< HEAD
+=======
+            pass
+>>>>>>> 5c712519846852f2d94b7a1b890e34f27dd727c5
         for x in range(0,qtd_processos):
             if escolhido == -1 and lista_processamento[x] == 0:
                 deadline_proxima = lista_deadlines[x]
                 escolhido = x
+<<<<<<< HEAD
                 global tempo_edf
                 tempo_edf = lista_tempo_chegada[x]
         return escolhido
 
     verificaFila()        
+=======
+                global tempo
+                tempo = lista_tempo_chegada[x]
+            pass
+        return escolhido
+        
+>>>>>>> 5c712519846852f2d94b7a1b890e34f27dd727c5
     while firstKill() != -1:
         p = firstKill()
         resta_executar = lista_tempo_execucao[p]-tempo_cpu[p] 
         if resta_executar > quantum:
+<<<<<<< HEAD
             tempo_edf+=quantum
             lista_deadlines[p] -= quantum
             verificaFila()
@@ -138,6 +156,23 @@ def edf():
             verificaFila()
             tempo_cpu[p]+=resta_executar
             turnaround+=tempo_edf-lista_tempo_chegada[p]
+=======
+            tempo+=quantum
+            verificaFila()
+            tempo_cpu[p]+=quantum 
+            tempo+=sobrecarga
+            verificaFila()
+        elif resta_executar == quantum and resta_executar > 0: 
+            tempo+=quantum
+            verificaFila() 
+            tempo_cpu[p]+=quantum 
+            turnaround+=tempo-lista_tempo_chegada[p] 
+        elif resta_executar < quantum:
+            tempo+= resta_executar
+            verificaFila()
+            tempo_cpu[p]+=resta_executar
+            turnaround+=tempo-lista_tempo_chegada[p]
+>>>>>>> 5c712519846852f2d94b7a1b890e34f27dd727c5
 
     turn_medio = float(turnaround/qtd_processos)
     response = {

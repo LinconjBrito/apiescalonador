@@ -145,6 +145,84 @@ def edf():
     }
     return response
 
+@app.route('/rr/submit', methods=['POST'])
+def round_r():
+    lista_processos = request.json
+    
+    lista_tempo_chegada = [] 
+    lista_tempo_execucao = []
+
+
+    for k, v in enumerate(lista_processos):
+
+        if 'T_chegada' in v:
+            lista_tempo_chegada.append(v['T_chegada'])
+
+        if 'T_exec' in v:
+            lista_tempo_execucao.append(v['T_exec'])
+
+        # setando os valores do sistema
+        if 'quantum' in v:
+            quantum = v['quantum']
+        if "qtd_processos" in v:
+            qtd_processos = v['qtd_processos']
+        if "sobrecarga" in v:
+            sobrecarga = v['sobrecarga']
+
+    global tempo_rr
+    tempo_rr = int(min(lista_tempo_chegada))
+    turnaround = 0
+    tempo_cpu = [0]*qtd_processos  
+    lista_processamento = [0]*qtd_processos  
+    lista_circular = [] 
+
+    def verificaFila():
+        global tempo_rr
+        for x in range(0,qtd_processos):
+            if lista_tempo_chegada[x] <= tempo_rr and lista_processamento[x] == 0:
+                lista_processamento[x] = 1 
+                lista_circular.append(x)
+        for x in range(0,qtd_processos):
+            if lista_tempo_chegada[x] > tempo_rr and lista_processamento[x] == 0 and lista_circular == []:
+                lista_processamento[x] = 1
+                tempo_rr = lista_tempo_chegada[x]
+                lista_circular.append(x)
+            pass
+    verificaFila()
+
+    while lista_circular != []:
+        p = lista_circular[0]
+        resta_executar = lista_tempo_execucao[p]-tempo_cpu[p]  
+        if resta_executar > quantum:
+            tempo_rr+= quantum
+            verificaFila()
+            tempo_cpu[p]+=quantum
+            tempo_rr+= sobrecarga
+            verificaFila()
+            lista_circular.remove(p)
+            lista_circular.append(p)
+        elif resta_executar == quantum and resta_executar > 0 :
+            tempo_rr+=quantum
+            verificaFila()
+            tempo_cpu[p]+=quantum
+            turnaround+=tempo_rr-lista_tempo_chegada[p]
+            lista_circular.remove(p)
+            verificaFila()
+        elif resta_executar < quantum:
+            tempo_rr+= resta_executar
+            verificaFila()
+            tempo_cpu[p]+=resta_executar
+            turnaround+=tempo_rr-lista_tempo_chegada[p]
+            lista_circular.remove(p)
+            verificaFila()
+    
+    turn_medio = float(turnaround/qtd_processos)
+    response = {
+        "turnaround" : turn_medio
+    }
+    return response 
+
+
 
 
 if __name__ == '__main__':
